@@ -18,7 +18,7 @@ client.once("ready", () => {
 client.on("interactionCreate", interaction => {
 	if (!interaction.isCommand()) return;
 	console.log("Received command:", interaction.commandName);
-	void runCommand(interaction, prisma);
+	void runCommand(client, interaction, prisma);
 });
 
 void client.login(process.env["TOKEN"]);

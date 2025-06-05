@@ -10,8 +10,7 @@ export default [
 
 	// Add TypeScript support and rules
 	...tseslint.configs.recommended,
-	...tseslint.configs.recommendedTypeChecked,
-	...tseslint.configs.strictTypeChecked,
+	...tseslint.configs.strict,
 	...tseslint.configs.stylisticTypeChecked,
 
 	// Apply Prettier config

@@ -1,25 +1,18 @@
-import { PrismaClient } from "@prisma/client";
 import {
-	ApplicationIntegrationType,
+	APIApplicationCommandOption,
 	BaseApplicationCommandData,
-	CommandInteraction,
-	InteractionContextType,
-	Locale,
-	PermissionResolvable
+	Client,
+	CommandInteraction
 } from "discord.js";
+import { PrismaClient } from "@prisma/client";
 
-export abstract class CommandType implements BaseApplicationCommandData {
-	public abstract name: string;
-	public abstract description: string;
-	public abstract nameLocalizations?: Partial<Record<Locale, string | null>> | undefined;
-	public abstract dmPermission?: boolean | undefined;
-	public abstract defaultMemberPermissions?: PermissionResolvable | null | undefined;
-	public abstract nsfw?: boolean | undefined;
-	public abstract contexts?: readonly InteractionContextType[] | undefined;
-	public abstract integrationTypes?: readonly ApplicationIntegrationType[] | undefined;
+export type CommandType = {
+	description: string;
+	args: APIApplicationCommandOption[];
 
-	public abstract run(
+	run(
+		client: Client,
 		interaction: CommandInteraction,
 		prisma: PrismaClient
 	): Promise<void>;
-}
+} & BaseApplicationCommandData;

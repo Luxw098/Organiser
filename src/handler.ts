@@ -4,6 +4,7 @@ import { join } from "path";
 
 import { CommandType } from "./types/CommandType.ts";
 import { PrismaClient } from "@prisma/client";
+import { BuildEmbed } from "./utils/EmbedBuilter.ts";
 
 const commands: CommandType[] = [];
 
@@ -30,6 +31,7 @@ export async function setupCommands(client: Client) {
 			defaultMemberPermissions: command.defaultMemberPermissions,
 			nsfw: command.nsfw,
 			contexts: command.contexts,
+			options: command.args,
 			integrationTypes: command.integrationTypes
 		} as ApplicationCommandDataResolvable);
 		commands.push(command);
@@ -37,14 +39,18 @@ export async function setupCommands(client: Client) {
 	}
 
 	try {
-		await client.application?.commands.set(commands_data);
+		await client.application?.commands.set(commands_data, "1353417061640175687");
 		console.log("Commands registered successfully.");
 	} catch (err) {
 		console.log(err);
 	}
 }
 
-export async function runCommand(interaction: CommandInteraction, prisma: PrismaClient) {
+export async function runCommand(
+	client: Client,
+	interaction: CommandInteraction,
+	prisma: PrismaClient
+) {
 	const command = commands.find(cmd => cmd.name === interaction.commandName);
 	if (!command) {
 		console.error(`Command not found: ${interaction.commandName}`);
@@ -53,12 +59,17 @@ export async function runCommand(interaction: CommandInteraction, prisma: Prisma
 	}
 
 	try {
-		await command.run(interaction, prisma);
+		await command.run(client, interaction, prisma);
 	} catch (error) {
 		console.error(`Error executing command ${interaction.commandName}:`, error);
-		await interaction.reply({
-			content: "There was an error while executing this command.",
-			ephemeral: true
-		});
+		if (interaction.channel?.isSendable())
+			await interaction.channel.send({
+				embeds: [
+					BuildEmbed({
+						title: "There was an error while executing this command.",
+						description: JSON.stringify(error)
+					})
+				]
+			});
 	}
 }

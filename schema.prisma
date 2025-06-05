@@ -15,20 +15,41 @@ datasource db {
 }
 
 model Event {
-  id          Int      @id @default(autoincrement())
+  id          Int         @id @default(autoincrement())
+  Schedule    Schedule[]  @relation("ScheduleEvents")
   title       String
   description String
   world       String
   tags        String
   startAt     DateTime
   duration    Int
-  schedule_id Int
-  schedule    Schedule @relation(fields: [schedule_id], references: [id])
 }
 
 model Schedule {
-  id      Int      @id @default(autoincrement())
-  day     DateTime @unique
-  events  Event[]
+  id        Int      @id @default(autoincrement())
+  guild_id  String   
+  day       DateTime @unique
+  events    Event[]  @relation("ScheduleEvents")
+  updatedAt DateTime @updatedAt
 }
 
+
+model UserConfig {
+  id              Int      @id @default(autoincrement())
+  identifier      String   @unique
+  timezone        String   
+  available_times String   
+  preferences     String
+  tags            String
+  contact         String
+  verified_vrc    String
+  updatedAt       DateTime @updatedAt
+}
+
+model AdminConfig {
+  id              Int      @id @default(autoincrement())
+  guild_id        String   @unique
+  storage_length  Int
+  allow_requests  Boolean
+  updatedAt       DateTime @updatedAt
+}
